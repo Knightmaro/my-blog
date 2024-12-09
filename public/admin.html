@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>博客管理系统</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>发布新文章</h1>
+        <div class="form-group">
+            <label>标题：</label>
+            <input type="text" id="title" style="width: 100%;">
+        </div>
+        <div class="form-group">
+            <label>内容：</label>
+            <textarea id="content"></textarea>
+        </div>
+        <button onclick="savePost()">发布</button>
+        
+        <h2>文章列表</h2>
+        <div id="postList"></div>
+    </div>
+
+    <script>
+        function savePost() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            
+            // 保存到 localStorage
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            posts.push({
+                id: Date.now(),
+                title,
+                content,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('posts', JSON.stringify(posts));
+            
+            alert('发布成功！');
+            loadPosts();
+        }
+
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            const postList = document.getElementById('postList');
+            postList.innerHTML = posts.map(post => `
+                <div style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+                    <h3>${post.title}</h3>
+                    <p>发布时间：${new Date(post.date).toLocaleString()}</p>
+                    <button onclick="deletePost(${post.id})">删除</button>
+                </div>
+            `).join('');
+        }
+
+        function deletePost(id) {
+            let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            posts = posts.filter(post => post.id !== id);
+            localStorage.setItem('posts', JSON.stringify(posts));
+            loadPosts();
+        }
+
+        // 页面加载时显示文章列表
+        loadPosts();
+
+        // 验证 GitHub 登录状态
+        async function checkGithubAuth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://api.github.com/user', {
+                    headers: {
+                        Authorization: `token ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('认证失败');
+                }
+
+                const userData = await response.json();
+                if (userData.login !== 'knightmaro') {
+                    window.location.href = 'login.html?error=unauthorized';
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 页面加载时检查认证
+        checkGithubAuth();
+    </script>
+</body>
+</html> 

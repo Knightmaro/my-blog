@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我的博客</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .post {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>我的博客</h1>
+        <div id="posts"></div>
+    </div>
+
+    <script>
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            const postsDiv = document.getElementById('posts');
+            postsDiv.innerHTML = posts.map(post => `
+                <div class="post">
+                    <h2>${post.title}</h2>
+                    <p><small>发布时间：${new Date(post.date).toLocaleString()}</small></p>
+                    <div>${post.content}</div>
+                </div>
+            `).join('');
+        }
+
+        // 页面加载时显示文章
+        loadPosts();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录</title>
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .github-button {
+            background-color: #24292e;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>管理员登录</h2>
+        <button class="github-button" onclick="loginWithGithub()">
+            使用 GitHub 登录
+        </button>
+    </div>
+
+    <script>
+        function loginWithGithub() {
+            const clientId = '你的client_id';
+            window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=user`;
+        }
+
+        // 检查是否有错误消息
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === 'unauthorized') {
+            alert('只有博客所有者才能访问管理界面！');
+        } else if (urlParams.get('error') === 'auth_failed') {
+            alert('认证失败，请重试！');
+        }
+    </script>
+</body>
+</html> 
